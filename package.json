@@ -1,0 +1,41 @@
+{
+  "name": "github-actions-seminar",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "npx ncc build src/index.ts -o dist",
+    "lint": "eslint --ext .ts .",
+    "lint:fix": "eslint --ext .ts . --fix",
+    "format": "prettier --check \"**/*.+(js|ts|json)\"",
+    "format:fix": "prettier --write \"**/*.+(js|ts|json)\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corderop/github-actions-seminar.git"
+  },
+  "keywords": [
+    "github",
+    "action",
+    "javascript"
+  ],
+  "author": "corderop",
+  "bugs": {
+    "url": "https://github.com/corderop/github-actions-seminar/issues"
+  },
+  "homepage": "https://github.com/corderop/github-actions-seminar#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
+    "@vercel/ncc": "^0.34.0",
+    "eslint": "^8.13.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "^2.6.2",
+    "ts-node": "^10.7.0",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.6.3"
+  }
+}
