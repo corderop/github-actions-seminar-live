@@ -32,15 +32,7 @@ interface ReponseBody {
   }
 }
 
-async function run() {
-  const { GITHUB_TOKEN, RAPID_API_KEY } = getInputs()
-  const { comment, number } = getMessageAndPrNumber()
-
-  if (!comment || !number) {
-    core.setFailed("No comment or pull request number found.")
-    return
-  }
-
+async function translateText(comment: string, RAPID_API_KEY: string) {
   const encodedParams = new URLSearchParams()
   encodedParams.append("target", "en")
   encodedParams.append("q", comment)
@@ -67,7 +59,32 @@ async function run() {
     return
   }
 
-  console.log(translatedText)
+  return translatedText
+}
+
+async function run() {
+  const { GITHUB_TOKEN, RAPID_API_KEY } = getInputs()
+
+  const { comment, number } = getMessageAndPrNumber()
+  if (!comment || !number) {
+    core.setFailed("No comment or pull request number found.")
+    return
+  }
+
+  const translatedText = await translateText(comment, RAPID_API_KEY)
+  if (!translatedText) {
+    core.setFailed("No translated text found.")
+    return
+  }
+
+  const octokit = github.getOctokit(GITHUB_TOKEN)
+  const message = `:robot: **Translated comment**: ${translatedText}`
+
+  await octokit.rest.issues.createComment({
+    ...github.context.repo,
+    issue_number: number,
+    body: message,
+  })
 }
 
 run()

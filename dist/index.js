@@ -13808,15 +13808,9 @@ function getMessageAndPrNumber() {
     const number = pullRequest === null || pullRequest === void 0 ? void 0 : pullRequest.number;
     return { comment, number };
 }
-function run() {
+function translateText(comment, RAPID_API_KEY) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
-        const { GITHUB_TOKEN, RAPID_API_KEY } = getInputs();
-        const { comment, number } = getMessageAndPrNumber();
-        if (!comment || !number) {
-            core.setFailed("No comment or pull request number found.");
-            return;
-        }
         const encodedParams = new URLSearchParams();
         encodedParams.append("target", "en");
         encodedParams.append("q", comment);
@@ -13838,7 +13832,25 @@ function run() {
             core.setFailed("No translated text found.");
             return;
         }
-        console.log(translatedText);
+        return translatedText;
+    });
+}
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { GITHUB_TOKEN, RAPID_API_KEY } = getInputs();
+        const { comment, number } = getMessageAndPrNumber();
+        if (!comment || !number) {
+            core.setFailed("No comment or pull request number found.");
+            return;
+        }
+        const translatedText = yield translateText(comment, RAPID_API_KEY);
+        if (!translatedText) {
+            core.setFailed("No translated text found.");
+            return;
+        }
+        const octokit = github.getOctokit(GITHUB_TOKEN);
+        const message = `:robot: **Translated comment**: ${translatedText}`;
+        yield octokit.rest.issues.createComment(Object.assign(Object.assign({}, github.context.repo), { issue_number: number, body: message }));
     });
 }
 run();
